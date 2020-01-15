@@ -13,16 +13,15 @@ namespace WebViewDelayLoad
     /// </summary>
     public partial class MainWindow : Window
     {
-        ChromiumWebBrowser webBrowser;
+        readonly ChromiumWebBrowser webBrowser;
+        const int delay = 1000;
+        const string htmlLink = @"https://www.tradingview.com/";
         
         Task task = null;
         bool isTaskStarted = false;
         public MainWindow()
         {
             InitializeComponent();
-            
-            
-            var html = @"https://www.tradingview.com/";
 
             var settings = new CefSettings()
             {
@@ -31,7 +30,7 @@ namespace WebViewDelayLoad
             };
 
             Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
-            webBrowser = new ChromiumWebBrowser(html);
+            webBrowser = new ChromiumWebBrowser(htmlLink);
             webBrowser.LoadingStateChanged += WebBrowser_LoadingStateChanged;
 
             
@@ -46,7 +45,7 @@ namespace WebViewDelayLoad
                 {
                     isTaskStarted = true;
                     task = new Task(() => {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(delay);
                         Dispatcher.Invoke(async () => {
                             string text = await webBrowser.GetBrowser().MainFrame.GetSourceAsync();
                             textBoxSource.Text = text;
